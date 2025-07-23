@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { DollarSign, ArrowDownCircle, ArrowUpCircle, ReceiptText, Wallet, FileText, Settings, Printer } from "lucide-react";
 import { Link } from "react-router-dom";
+import React, { useState, useEffect } from "react"; // Import React and hooks
 
 const navItems = [
   { name: "Penerimaan Kas", path: "/penerimaan-kas", icon: ReceiptText },
@@ -13,9 +14,21 @@ const navItems = [
 ];
 
 const Index = () => {
+  const [userName, setUserName] = useState<string>("");
+
+  useEffect(() => {
+    const savedUserName = localStorage.getItem("userName");
+    if (savedUserName) {
+      setUserName(savedUserName);
+    } else {
+      setUserName("Pengguna"); // Default if not set
+    }
+  }, []);
+
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-4xl font-bold mb-8 text-center">Dashboard Aplikasi Kas</h1>
+      <h1 className="text-4xl font-bold mb-2 text-center">Aplikasi Bendahara IBI Cab Kota Pekalongan</h1>
+      <p className="text-xl text-center text-muted-foreground mb-8">Selamat Datang, {userName}!</p> {/* Display user name */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
