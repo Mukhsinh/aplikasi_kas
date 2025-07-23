@@ -1,14 +1,14 @@
 import React from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { toast } from "@/utils/toast";
+import { showLoading, dismissToast, showSuccess } from "@/utils/toast"; // Mengimpor fungsi secara langsung
 
 const PrintReport: React.FC = () => {
   const handlePrint = () => {
-    toast.showLoading("Mempersiapkan laporan...");
+    const loadingToastId = showLoading("Mempersiapkan laporan..."); // Menggunakan showLoading yang diimpor
     setTimeout(() => {
-      toast.dismissToast("loading"); // Dismiss the loading toast
-      toast.success("Laporan berhasil dibuat (simulasi). Fungsionalitas ekspor ke Excel/PDF memerlukan implementasi backend atau pustaka sisi klien.");
+      dismissToast(loadingToastId); // Menggunakan dismissToast yang diimpor
+      showSuccess("Laporan berhasil dibuat (simulasi). Fungsionalitas ekspor ke Excel/PDF memerlukan implementasi backend atau pustaka sisi klien."); // Menggunakan showSuccess yang diimpor
     }, 2000);
   };
 
