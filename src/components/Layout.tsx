@@ -42,7 +42,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         ))}
       </nav>
       <div className="mt-auto text-center text-xs text-muted-foreground pt-4">
-        Developed by : MukhsinHadi (copyright)Keep going
+        Developed by : MukhsinHadi (copyright)
       </div>
     </div>
   );
