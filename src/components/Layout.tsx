@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
@@ -10,12 +10,37 @@ interface LayoutProps {
 }
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
+  const [userName, setUserName] = useState<string>("");
+
+  useEffect(() => {
+    const loadUserName = () => {
+      const savedUserName = localStorage.getItem("userName");
+      if (savedUserName) {
+        setUserName(savedUserName);
+      } else {
+        setUserName("Pengguna"); // Default if not set
+      }
+    };
+
+    loadUserName(); // Load on initial mount
+
+    // Listen for custom event to update user name
+    window.addEventListener('userNameUpdated', loadUserName);
+
+    return () => {
+      window.removeEventListener('userNameUpdated', loadUserName);
+    };
+  }, []);
+
   return (
     <div className="flex min-h-screen bg-gray-50 dark:bg-gray-950">
       {/* Sidebar */}
       <aside className="w-64 bg-sidebar dark:bg-sidebar-background text-sidebar-foreground dark:text-sidebar-foreground p-4 flex flex-col shadow-lg">
         <div className="mb-8">
           <h2 className="text-2xl font-bold text-sidebar-primary dark:text-sidebar-primary-foreground">Aplikasi Bendahara Cab IBI Kota Pekalongan</h2>
+          {userName && (
+            <p className="text-sm text-sidebar-foreground/80 mt-1">Selamat datang, {userName}!</p>
+          )}
         </div>
         <nav className="flex-grow">
           <ul className="space-y-2">

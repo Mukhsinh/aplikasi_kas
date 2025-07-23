@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -9,16 +9,30 @@ const MasterSetting: React.FC = () => {
   const [userName, setUserName] = useState<string>("");
   const [bankAccount, setBankAccount] = useState<string>("");
 
+  useEffect(() => {
+    // Load saved user name and bank account from localStorage on component mount
+    const savedUserName = localStorage.getItem("userName");
+    if (savedUserName) {
+      setUserName(savedUserName);
+    }
+    const savedBankAccount = localStorage.getItem("bankAccount");
+    if (savedBankAccount) {
+      setBankAccount(savedBankAccount);
+    }
+  }, []);
+
   const handleSaveUser = (e: React.FormEvent) => {
     e.preventDefault();
-    // Logika untuk menyimpan pengguna akan ditambahkan di sini
+    localStorage.setItem("userName", userName); // Save to localStorage
     console.log("Pengguna disimpan:", userName);
     showSuccess("Pengguna berhasil disimpan!");
+    // Optionally, trigger a refresh or update context if needed for immediate display in Layout
+    window.dispatchEvent(new Event('userNameUpdated')); // Custom event to notify Layout
   };
 
   const handleSaveBankAccount = (e: React.FormEvent) => {
     e.preventDefault();
-    // Logika untuk menyimpan rekening bank akan ditambahkan di sini
+    localStorage.setItem("bankAccount", bankAccount); // Save to localStorage
     console.log("Nomor Rekening Bank disimpan:", bankAccount);
     showSuccess("Nomor Rekening Bank berhasil disimpan!");
   };
