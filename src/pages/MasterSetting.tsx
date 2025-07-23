@@ -7,17 +7,36 @@ import { showSuccess } from "@/utils/toast";
 
 const MasterSetting: React.FC = () => {
   const [userName, setUserName] = useState<string>("");
+  const [bankAccountName, setBankAccountName] = useState<string>("");
+  const [bankAccountNumber, setBankAccountNumber] = useState<string>("");
+  const [bankName, setBankName] = useState<string>("");
 
   useEffect(() => {
     const savedUserName = localStorage.getItem("userName");
+    const savedBankAccountName = localStorage.getItem("bankAccountName");
+    const savedBankAccountNumber = localStorage.getItem("bankAccountNumber");
+    const savedBankName = localStorage.getItem("bankName");
+
     if (savedUserName) {
       setUserName(savedUserName);
     }
+    if (savedBankAccountName) {
+      setBankAccountName(savedBankAccountName);
+    }
+    if (savedBankAccountNumber) {
+      setBankAccountNumber(savedBankAccountNumber);
+    }
+    if (savedBankName) {
+      setBankName(savedBankName);
+    }
   }, []);
 
-  const handleSaveUserName = () => {
+  const handleSaveSettings = () => {
     localStorage.setItem("userName", userName);
-    showSuccess("Nama pengguna berhasil disimpan!");
+    localStorage.setItem("bankAccountName", bankAccountName);
+    localStorage.setItem("bankAccountNumber", bankAccountNumber);
+    localStorage.setItem("bankName", bankName);
+    showSuccess("Pengaturan berhasil disimpan!");
   };
 
   return (
@@ -36,7 +55,34 @@ const MasterSetting: React.FC = () => {
               placeholder="Masukkan nama Anda"
             />
           </div>
-          <Button onClick={handleSaveUserName} className="w-full">Simpan Nama Pengguna</Button>
+          <div className="space-y-2">
+            <Label htmlFor="bankAccountName">Nama Pemilik Rekening Bank</Label>
+            <Input
+              id="bankAccountName"
+              value={bankAccountName}
+              onChange={(e) => setBankAccountName(e.target.value)}
+              placeholder="Contoh: John Doe"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="bankAccountNumber">Nomor Rekening Bank</Label>
+            <Input
+              id="bankAccountNumber"
+              value={bankAccountNumber}
+              onChange={(e) => setBankAccountNumber(e.target.value)}
+              placeholder="Contoh: 1234567890"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="bankName">Nama Bank</Label>
+            <Input
+              id="bankName"
+              value={bankName}
+              onChange={(e) => setBankName(e.target.value)}
+              placeholder="Contoh: Bank Central Asia (BCA)"
+            />
+          </div>
+          <Button onClick={handleSaveSettings} className="w-full">Simpan Pengaturan</Button>
         </CardContent>
       </Card>
     </div>

@@ -16,11 +16,11 @@ const CashInflow: React.FC = () => {
   const [transactionNumber, setTransactionNumber] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [paymentType, setPaymentType] = useState<"Tunai" | "Bank" | "">("");
+  const [receiptType, setReceiptType] = useState<"Tunai" | "Bank" | "">(""); // Changed from paymentType to receiptType
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!date || !transactionNumber || !description || !amount || !paymentType) {
+    if (!date || !transactionNumber || !description || !amount || !receiptType) {
       showError("Semua kolom harus diisi.");
       return;
     }
@@ -30,7 +30,7 @@ const CashInflow: React.FC = () => {
       transactionNumber,
       description,
       amount: parseFloat(amount),
-      paymentType,
+      receiptType, // Changed from paymentType to receiptType
     };
 
     console.log("Penerimaan Kas Baru:", newTransaction);
@@ -41,7 +41,7 @@ const CashInflow: React.FC = () => {
     setTransactionNumber("");
     setDescription("");
     setAmount("");
-    setPaymentType("");
+    setReceiptType(""); // Changed from paymentType to receiptType
   };
 
   return (
@@ -110,10 +110,10 @@ const CashInflow: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="payment-type">Tipe Pembayaran</Label>
-              <Select value={paymentType} onValueChange={(value: "Tunai" | "Bank") => setPaymentType(value)}>
-                <SelectTrigger id="payment-type">
-                  <SelectValue placeholder="Pilih Tipe Pembayaran" />
+              <Label htmlFor="receipt-type">Tipe Penerimaan</Label> {/* Changed label */}
+              <Select value={receiptType} onValueChange={(value: "Tunai" | "Bank") => setReceiptType(value)}>
+                <SelectTrigger id="receipt-type"> {/* Changed id */}
+                  <SelectValue placeholder="Pilih Tipe Penerimaan" /> {/* Changed placeholder */}
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Tunai">Tunai</SelectItem>
