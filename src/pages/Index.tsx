@@ -127,8 +127,7 @@ const Index = () => {
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-4xl font-bold mb-2 text-center">Aplikasi Bendahara IBI Cab Kota Pekalongan</h1>
-      <p className="text-xl text-center text-muted-foreground">Selamat Datang, {userName}!</p>
-      <p className="text-sm text-center text-muted-foreground mb-8">Developed by : MukhsinHadi (copyright)Keep going</p>
+      <p className="text-xl text-center text-muted-foreground mb-8">Selamat Datang, {userName}!</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

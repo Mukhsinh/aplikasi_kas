@@ -4,7 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, ReceiptText, Wallet, FileText, Printer, Settings, LayoutDashboard } from "lucide-react"; // Import all necessary icons
+import { Menu, ReceiptText, Wallet, FileText, Printer, Settings, LayoutDashboard } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -13,7 +13,7 @@ interface LayoutProps {
 }
 
 const navItems = [
-  { name: "Dashboard", path: "/", icon: LayoutDashboard }, // Added icon for Dashboard
+  { name: "Dashboard", path: "/", icon: LayoutDashboard },
   { name: "Penerimaan Kas", path: "/penerimaan-kas", icon: ReceiptText },
   { name: "Pengeluaran Kas", path: "/pengeluaran-kas", icon: Wallet },
   { name: "Laporan Saldo Kas", path: "/laporan-saldo-kas", icon: FileText },
@@ -41,6 +41,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Button>
         ))}
       </nav>
+      <div className="mt-auto text-center text-xs text-muted-foreground pt-4">
+        Developed by : MukhsinHadi (copyright)Keep going
+      </div>
     </div>
   );
 
