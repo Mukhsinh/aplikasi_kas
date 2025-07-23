@@ -6,7 +6,7 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { format, getMonth, getYear, startOfMonth, endOfMonth, startOfYear, endOfYear, addMonths } from "date-fns";
 import { id } from "date-fns/locale"; // Import locale for Indonesian month names
-import jsPDF from "jspdf";
+import { jsPDF } from "jspdf"; // Changed from default import to named import
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { showSuccess, showError } from "@/utils/toast";
