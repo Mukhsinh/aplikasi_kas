@@ -1,20 +1,26 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { Button } from "@/components/ui/button";
-import { ArrowDownCircle, ArrowUpCircle, ReceiptText, Wallet, FileText, Settings, Printer, LayoutDashboard } from "lucide-react";
-import { Link } from "react-router-dom";
-import React, { useState, useEffect, useMemo } from "react"; // Import React and hooks, useMemo
-import { getTransactions, Transaction } from "@/data/transactions"; // Import getTransactions and Transaction type
-import { format, isSameMonth, isSameYear, endOfMonth } from "date-fns"; // Import date-fns functions
-import { id } from "date-fns/locale"; // Import locale for Indonesian month names
+import { ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import React, { useState, useEffect, useMemo } from "react";
+import { getTransactions, Transaction } from "@/data/transactions";
+import { format, isSameMonth, isSameYear, endOfMonth, subMonths } from "date-fns";
+import { id } from "date-fns/locale";
+import {
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from "@/components/ui/chart";
+import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
 
-const navItems = [
-  { name: "Dashboard", path: "/", icon: LayoutDashboard },
-  { name: "Penerimaan Kas", path: "/penerimaan-kas", icon: ReceiptText },
-  { name: "Pengeluaran Kas", path: "/pengeluaran-kas", icon: Wallet },
-  { name: "Laporan Saldo Kas", path: "/laporan-saldo-kas", icon: FileText },
-  { name: "Cetak Laporan", path: "/cetak-laporan", icon: Printer },
-  { name: "Master Setting", path: "/master-setting", icon: Settings },
-];
+const chartConfig = {
+  inflow: {
+    label: "Penerimaan",
+    color: "hsl(var(--primary))",
+  },
+  outflow: {
+    label: "Pengeluaran",
+    color: "hsl(var(--destructive))",
+  },
+} as const;
 
 const Index = () => {
   const [userName, setUserName] = useState<string>("");
@@ -25,13 +31,11 @@ const Index = () => {
     if (savedUserName) {
       setUserName(savedUserName);
     } else {
-      setUserName("Pengguna"); // Default if not set
+      setUserName("Pengguna");
     }
 
-    // Load transactions initially
     setAllAppTransactions(getTransactions());
 
-    // Listen for storage changes to update transactions in real-time
     const handleStorageChange = () => {
       setAllAppTransactions(getTransactions());
     };
@@ -39,7 +43,7 @@ const Index = () => {
     return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
-  const { totalBalance, monthlyInflow, monthlyOutflow, lastTransactionDate } = useMemo(() => {
+  const { totalBalance, currentMonthInflow, currentMonthOutflow, lastTransactionDate, chartData } = useMemo(() => {
     let currentBalance = 0;
     const initialSaldoEntry = allAppTransactions.find(t => t.type === "Saldo");
     let initialBalance = initialSaldoEntry?.amount || 0;
@@ -58,7 +62,7 @@ const Index = () => {
       }
     });
 
-    // Calculate monthly inflow and outflow
+    // Calculate current month inflow and outflow for top cards
     const today = new Date();
     let inflow = 0;
     let outflow = 0;
@@ -80,11 +84,43 @@ const Index = () => {
     
     const dateToDisplay = latestTransaction ? new Date(latestTransaction.date) : new Date();
 
+    // Prepare data for the chart (last 6 months)
+    const monthlyDataMap = new Map<string, { inflow: number; outflow: number }>();
+    for (let i = 5; i >= 0; i--) {
+      const monthDate = subMonths(today, i);
+      const monthKey = format(monthDate, "yyyy-MM");
+      monthlyDataMap.set(monthKey, { inflow: 0, outflow: 0 });
+    }
+
+    allAppTransactions.forEach(t => {
+      const transactionDate = new Date(t.date);
+      const monthKey = format(transactionDate, "yyyy-MM");
+
+      if (monthlyDataMap.has(monthKey)) {
+        const data = monthlyDataMap.get(monthKey)!;
+        if (t.type === "Penerimaan") {
+          data.inflow += t.amount;
+        } else if (t.type === "Pengeluaran") {
+          data.outflow += t.amount;
+        }
+        monthlyDataMap.set(monthKey, data);
+      }
+    });
+
+    const chartData = Array.from(monthlyDataMap.entries())
+      .sort(([keyA], [keyB]) => keyA.localeCompare(keyB))
+      .map(([key, data]) => ({
+        month: format(new Date(key), "MMM yyyy", { locale: id }),
+        inflow: data.inflow,
+        outflow: data.outflow,
+      }));
+
     return {
       totalBalance: currentBalance,
-      monthlyInflow: inflow,
-      monthlyOutflow: outflow,
-      lastTransactionDate: format(endOfMonth(dateToDisplay), "dd MMMM yyyy", { locale: id })
+      currentMonthInflow: inflow,
+      currentMonthOutflow: outflow,
+      lastTransactionDate: format(endOfMonth(dateToDisplay), "dd MMMM yyyy", { locale: id }),
+      chartData,
     };
   }, [allAppTransactions]);
 
@@ -109,7 +145,7 @@ const Index = () => {
             <ArrowUpCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Rp {monthlyInflow.toLocaleString('id-ID')}</div>
+            <div className="text-2xl font-bold">Rp {currentMonthInflow.toLocaleString('id-ID')}</div>
             <p className="text-xs text-muted-foreground">Bulan {format(new Date(), "MMMM yyyy", { locale: id })}</p>
           </CardContent>
         </Card>
@@ -119,27 +155,33 @@ const Index = () => {
             <ArrowDownCircle className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">Rp {monthlyOutflow.toLocaleString('id-ID')}</div>
+            <div className="text-2xl font-bold">Rp {currentMonthOutflow.toLocaleString('id-ID')}</div>
             <p className="text-xs text-muted-foreground">Bulan {format(new Date(), "MMMM yyyy", { locale: id })}</p>
           </CardContent>
         </Card>
       </div>
 
-      <h2 className="text-2xl font-bold mb-6 text-center">Menu Aplikasi</h2>
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-        {navItems.map((item) => (
-          <Card key={item.path} className="flex flex-col items-center justify-center p-6 text-center">
-            <CardContent className="p-0 flex flex-col items-center">
-              <item.icon className="h-12 w-12 text-primary mb-4" />
-              <Link to={item.path} className="w-full">
-                <Button variant="ghost" className="text-lg font-semibold w-full h-auto py-2">
-                  {item.name}
-                </Button>
-              </Link>
-            </CardContent>
-          </Card>
-        ))}
-      </div>
+      <h2 className="text-2xl font-bold mb-6 text-center">Perbandingan Kas Bulanan</h2>
+      <Card>
+        <CardContent className="pt-6">
+          <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+            <BarChart accessibilityLayer data={chartData}>
+              <CartesianGrid vertical={false} />
+              <XAxis
+                dataKey="month"
+                tickLine={false}
+                tickMargin={10}
+                axisLine={false}
+              />
+              <YAxis />
+              <Tooltip content={<ChartTooltipContent />} />
+              <Legend />
+              <Bar dataKey="inflow" fill="var(--color-inflow)" radius={4} />
+              <Bar dataKey="outflow" fill="var(--color-outflow)" radius={4} />
+            </BarChart>
+          </ChartContainer>
+        </CardContent>
+      </Card>
     </div>
   );
 };
