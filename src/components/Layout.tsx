@@ -63,8 +63,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <SidebarContent />
         </aside>
       )}
-      <main className={cn("flex-1 p-8", isMobile ? "mt-16" : "")}>
-        {children}
+      <main className={cn("flex-1 p-8 flex flex-col", isMobile ? "mt-16" : "")}>
+        <div className="flex-grow">
+          {children}
+        </div>
+        <footer className="mt-8 text-center text-sm text-muted-foreground">
+          Developed by : MukhsinHadi (copyright)Keep going
+        </footer>
       </main>
     </div>
   );
