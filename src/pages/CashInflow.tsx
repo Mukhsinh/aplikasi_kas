@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
@@ -10,7 +10,8 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { showSuccess, showError } from "@/utils/toast";
-import { addTransaction } from "@/data/transactions"; // Import addTransaction
+import { addTransaction, getTransactions, updateTransaction, deleteTransaction, Transaction } from "@/data/transactions"; // Import all necessary functions
+import TransactionTable from "@/components/TransactionTable"; // Import the new component
 
 const CashInflow: React.FC = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -18,42 +19,88 @@ const CashInflow: React.FC = () => {
   const [description, setDescription] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [receiptType, setReceiptType] = useState<"Tunai" | "Bank" | "">("");
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [editingTransaction, setEditingTransaction] = useState<Transaction | null>(null);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  useEffect(() => {
+    loadTransactions();
+    const handleStorageChange = () => {
+      loadTransactions();
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
+
+  const loadTransactions = () => {
+    setTransactions(getTransactions());
+  };
+
+  const handleFormSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     if (!date || !transactionNumber || !description || !amount || !receiptType) {
       showError("Semua kolom harus diisi.");
       return;
     }
 
-    const newTransaction = {
+    const transactionData = {
       date: format(date, "yyyy-MM-dd"),
       transactionNumber,
       description,
       amount: parseFloat(amount),
-      paymentType: receiptType, // Use paymentType as per Transaction interface
-      type: "Penerimaan" as "Penerimaan", // Explicitly set type
+      paymentType: receiptType,
+      type: "Penerimaan" as "Penerimaan",
     };
 
-    addTransaction(newTransaction); // Save to local storage
-    showSuccess("Penerimaan kas berhasil ditambahkan!");
+    if (editingTransaction) {
+      updateTransaction({ ...editingTransaction, ...transactionData });
+      showSuccess("Penerimaan kas berhasil diperbarui!");
+      setEditingTransaction(null); // Exit edit mode
+    } else {
+      addTransaction(transactionData);
+      showSuccess("Penerimaan kas berhasil ditambahkan!");
+    }
 
-    // Reset form
+    resetForm();
+    loadTransactions(); // Reload transactions to update the table
+  };
+
+  const handleEdit = (transaction: Transaction) => {
+    setEditingTransaction(transaction);
+    setDate(new Date(transaction.date));
+    setTransactionNumber(transaction.transactionNumber || "");
+    setDescription(transaction.description);
+    setAmount(transaction.amount.toString());
+    setReceiptType(transaction.paymentType);
+  };
+
+  const handleDelete = (id: number) => {
+    if (window.confirm("Apakah Anda yakin ingin menghapus transaksi ini?")) {
+      deleteTransaction(id);
+      showSuccess("Transaksi berhasil dihapus!");
+      loadTransactions(); // Reload transactions to update the table
+      if (editingTransaction && editingTransaction.id === id) {
+        resetForm(); // Clear form if the deleted item was being edited
+      }
+    }
+  };
+
+  const resetForm = () => {
     setDate(new Date());
     setTransactionNumber("");
     setDescription("");
     setAmount("");
     setReceiptType("");
+    setEditingTransaction(null); // Clear editing state
   };
 
   return (
     <div className="container mx-auto py-8">
-      <Card>
+      <Card className="mb-8">
         <CardHeader>
-          <CardTitle className="text-3xl font-bold">Penerimaan Kas</CardTitle>
+          <CardTitle className="text-3xl font-bold">{editingTransaction ? "Edit Penerimaan Kas" : "Penerimaan Kas Baru"}</CardTitle>
         </CardHeader>
         <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleFormSubmit} className="space-y-6">
             <div className="space-y-2">
               <Label htmlFor="date">Tanggal</Label>
               <Popover>
@@ -124,8 +171,31 @@ const CashInflow: React.FC = () => {
               </Select>
             </div>
 
-            <Button type="submit" className="w-full">Catat Penerimaan</Button>
+            <div className="flex gap-4">
+              <Button type="submit" className="flex-1">
+                {editingTransaction ? "Perbarui Transaksi" : "Catat Penerimaan"}
+              </Button>
+              {editingTransaction && (
+                <Button type="button" variant="outline" onClick={resetForm} className="flex-1">
+                  Batal Edit
+                </Button>
+              )}
+            </div>
           </form>
+        </CardContent>
+      </Card>
+
+      <Card>
+        <CardHeader>
+          <CardTitle className="text-2xl font-bold">Pratinjau Penerimaan Kas</CardTitle>
+        </CardHeader>
+        <CardContent>
+          <TransactionTable
+            transactions={transactions}
+            onEdit={handleEdit}
+            onDelete={handleDelete}
+            typeFilter="Penerimaan"
+          />
         </CardContent>
       </Card>
     </div>

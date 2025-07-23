@@ -59,6 +59,26 @@ export const addTransaction = (newTransaction: Omit<Transaction, "id">): void =>
   localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(finalTransactions));
 };
 
+export const updateTransaction = (updatedTransaction: Transaction): void => {
+  if (typeof window === "undefined") {
+    console.warn("Cannot update transaction: window is undefined (SSR context).");
+    return;
+  }
+  const transactions = getTransactions().map(t =>
+    t.id === updatedTransaction.id ? updatedTransaction : t
+  );
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(transactions));
+};
+
+export const deleteTransaction = (transactionId: number): void => {
+  if (typeof window === "undefined") {
+    console.warn("Cannot delete transaction: window is undefined (SSR context).");
+    return;
+  }
+  const transactions = getTransactions().filter(t => t.id !== transactionId);
+  localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(transactions));
+};
+
 export const clearAllUserTransactions = (): void => {
   if (typeof window === "undefined") {
     console.warn("Cannot clear transactions: window is undefined (SSR context).");
