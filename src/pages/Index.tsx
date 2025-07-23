@@ -45,13 +45,6 @@ const Index = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="bg-gradient-to-br from-blue-50 to-green-50 dark:from-blue-950 dark:to-green-950 rounded-lg p-8 shadow-lg">
-        <div className="text-center mb-12">
-          <h1 className="text-5xl font-extrabold mb-4 text-gray-900 dark:text-gray-100">Aplikasi Bendahara IBI Cab Kota Pekalongan</h1>
-          <p className="text-xl text-gray-700 dark:text-gray-300">
-            Kelola keuangan Anda dengan mudah dan efisien.
-          </p>
-        </div>
-
         {/* Bagian Total Nominal */}
         <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
           <Card className="bg-white dark:bg-gray-800 shadow-md">

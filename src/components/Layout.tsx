@@ -3,7 +3,7 @@ import { Link } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { MadeWithDyad } from "@/components/made-with-dyad";
-import { Home, ArrowDownCircle, ArrowUpCircle, BarChart2, Printer } from "lucide-react";
+import { Home, ArrowDownCircle, ArrowUpCircle, BarChart2, Printer, Settings } from "lucide-react"; // Import Settings icon
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -15,7 +15,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Sidebar */}
       <aside className="w-64 bg-sidebar dark:bg-sidebar-background text-sidebar-foreground dark:text-sidebar-foreground p-4 flex flex-col shadow-lg">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-sidebar-primary dark:text-sidebar-primary-foreground">Aplikasi Bendahara IBI Cabang Kota Pekalongan</h2>
+          <h2 className="text-2xl font-bold text-sidebar-primary dark:text-sidebar-primary-foreground">Aplikasi Bendahara Cab IBI Kota Pekalongan</h2>
         </div>
         <nav className="flex-grow">
           <ul className="space-y-2">
@@ -56,6 +56,14 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
                 <Link to="/cetak-laporan">
                   <Printer className="mr-2 h-4 w-4" />
                   Cetak Laporan
+                </Link>
+              </Button>
+            </li>
+            <li>
+              <Button variant="ghost" className="w-full justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground" asChild>
+                <Link to="/master-setting">
+                  <Settings className="mr-2 h-4 w-4" />
+                  Master Setting
                 </Link>
               </Button>
             </li>
