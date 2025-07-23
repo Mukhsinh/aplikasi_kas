@@ -1,12 +1,22 @@
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
-import { DollarSign, ArrowDownCircle, ArrowUpCircle } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { DollarSign, ArrowDownCircle, ArrowUpCircle, ReceiptText, Wallet, FileText, Settings, Printer } from "lucide-react";
+import { Link } from "react-router-dom";
+
+const navItems = [
+  { name: "Penerimaan Kas", path: "/penerimaan-kas", icon: ReceiptText },
+  { name: "Pengeluaran Kas", path: "/pengeluaran-kas", icon: Wallet },
+  { name: "Laporan Saldo Kas", path: "/laporan-saldo-kas", icon: FileText },
+  { name: "Cetak Laporan", path: "/cetak-laporan", icon: Printer },
+  { name: "Master Setting", path: "/master-setting", icon: Settings },
+];
 
 const Index = () => {
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-4xl font-bold mb-8 text-center">Dashboard Aplikasi Kas</h1>
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Saldo Kas</CardTitle>
@@ -38,6 +48,23 @@ const Index = () => {
           </CardContent>
         </Card>
       </div>
+
+      <h2 className="text-2xl font-bold mb-6 text-center">Menu Aplikasi</h2>
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+        {navItems.map((item) => (
+          <Card key={item.path} className="flex flex-col items-center justify-center p-6 text-center">
+            <CardContent className="p-0 flex flex-col items-center">
+              <item.icon className="h-12 w-12 text-primary mb-4" />
+              <Link to={item.path} className="w-full">
+                <Button variant="ghost" className="text-lg font-semibold w-full h-auto py-2">
+                  {item.name}
+                </Button>
+              </Link>
+            </CardContent>
+          </Card>
+        ))}
+      </div>
+
       <div className="mt-12">
         <MadeWithDyad />
       </div>
