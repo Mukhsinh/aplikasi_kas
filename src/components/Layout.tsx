@@ -4,7 +4,7 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu } from "lucide-react";
+import { Menu, ReceiptText, Wallet, FileText, Printer, Settings, LayoutDashboard } from "lucide-react"; // Import all necessary icons
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -13,12 +13,12 @@ interface LayoutProps {
 }
 
 const navItems = [
-  { name: "Dashboard", path: "/" },
-  { name: "Penerimaan Kas", path: "/penerimaan-kas" },
-  { name: "Pengeluaran Kas", path: "/pengeluaran-kas" },
-  { name: "Laporan Saldo Kas", path: "/laporan-saldo-kas" },
-  { name: "Master Setting", path: "/master-setting" },
-  { name: "Cetak Laporan", path: "/cetak-laporan" },
+  { name: "Dashboard", path: "/", icon: LayoutDashboard }, // Added icon for Dashboard
+  { name: "Penerimaan Kas", path: "/penerimaan-kas", icon: ReceiptText },
+  { name: "Pengeluaran Kas", path: "/pengeluaran-kas", icon: Wallet },
+  { name: "Laporan Saldo Kas", path: "/laporan-saldo-kas", icon: FileText },
+  { name: "Master Setting", path: "/master-setting", icon: Settings },
+  { name: "Cetak Laporan", path: "/cetak-laporan", icon: Printer },
 ];
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
@@ -32,10 +32,13 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           <Button
             key={item.path}
             asChild
-            variant="ghost"
-            className="justify-start text-sidebar-foreground hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+            // Changed variant to 'default' and added custom classes for contrast
+            className="justify-start bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            <Link to={item.path}>{item.name}</Link>
+            <Link to={item.path} className="flex items-center gap-2"> {/* Added flex and gap for icon */}
+              <item.icon className="h-5 w-5" /> {/* Render icon */}
+              {item.name}
+            </Link>
           </Button>
         ))}
       </nav>
@@ -43,7 +46,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   );
 
   return (
-    <div className="flex min-h-screen bg-background">
+    <div className="flex min-h-screen"> {/* Removed bg-background as gradient is on body */}
       {isMobile ? (
         <Sheet>
           <SheetTrigger asChild>
