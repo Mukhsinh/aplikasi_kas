@@ -3,6 +3,7 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
+import { Button } from "@/components/ui/button"; // Import Button component
 import { getTransactions, Transaction } from "@/data/transactions"; // Import getTransactions
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
@@ -11,6 +12,8 @@ import { cn } from "@/lib/utils"; // Import cn for conditional class names
 const CashBalanceReport: React.FC = () => {
   const [filterPaymentType, setFilterPaymentType] = useState<"All" | "Tunai" | "Bank">("All");
   const [transactions, setTransactions] = useState<Transaction[]>([]);
+  const [currentPage, setCurrentPage] = useState(1);
+  const [rowsPerPage, setRowsPerPage] = useState(10); // Default rows per page
 
   useEffect(() => {
     setTransactions(getTransactions());
@@ -62,6 +65,23 @@ const CashBalanceReport: React.FC = () => {
     return filteredTransactions[filteredTransactions.length - 1].balance;
   }, [filteredTransactions]);
 
+  // Pagination logic
+  const totalPages = Math.ceil(filteredTransactions.length / rowsPerPage);
+  const paginatedTransactions = useMemo(() => {
+    const startIndex = (currentPage - 1) * rowsPerPage;
+    const endIndex = startIndex + rowsPerPage;
+    return filteredTransactions.slice(startIndex, endIndex);
+  }, [filteredTransactions, currentPage, rowsPerPage]);
+
+  const handlePageChange = (page: number) => {
+    setCurrentPage(page);
+  };
+
+  const handleRowsPerPageChange = (value: string) => {
+    setRowsPerPage(parseInt(value));
+    setCurrentPage(1); // Reset to first page when rows per page changes
+  };
+
   return (
     <div className="container mx-auto py-8">
       <Card>
@@ -107,8 +127,8 @@ const CashBalanceReport: React.FC = () => {
                 </TableRow>
               </TableHeader>
               <TableBody>
-                {filteredTransactions.length > 0 ? (
-                  filteredTransactions.map((transaction) => (
+                {paginatedTransactions.length > 0 ? (
+                  paginatedTransactions.map((transaction) => (
                     <TableRow key={transaction.id}>
                       <TableCell>{format(new Date(transaction.date), "dd MMM yyyy", { locale: id })}</TableCell>
                       <TableCell>{transaction.description}</TableCell>
@@ -133,6 +153,43 @@ const CashBalanceReport: React.FC = () => {
                 )}
               </TableBody>
             </Table>
+          </div>
+
+          <div className="flex flex-col sm:flex-row items-center justify-between space-y-4 sm:space-y-0">
+            <div className="flex items-center space-x-2">
+              <Label htmlFor="rows-per-page">Baris per halaman:</Label>
+              <Select value={String(rowsPerPage)} onValueChange={handleRowsPerPageChange}>
+                <SelectTrigger id="rows-per-page" className="w-[80px]">
+                  <SelectValue placeholder={rowsPerPage} />
+                </SelectTrigger>
+                <SelectContent>
+                  <SelectItem value="10">10</SelectItem>
+                  <SelectItem value="25">25</SelectItem>
+                  <SelectItem value="50">50</SelectItem>
+                </SelectContent>
+              </Select>
+            </div>
+            <div className="flex items-center space-x-2">
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage - 1)}
+                disabled={currentPage === 1}
+              >
+                Sebelumnya
+              </Button>
+              <span className="text-sm font-medium">
+                Halaman {currentPage} dari {totalPages}
+              </span>
+              <Button
+                variant="outline"
+                size="sm"
+                onClick={() => handlePageChange(currentPage + 1)}
+                disabled={currentPage === totalPages || totalPages === 0}
+              >
+                Berikutnya
+              </Button>
+            </div>
           </div>
         </CardContent>
       </Card>
