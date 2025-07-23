@@ -3,13 +3,17 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
+import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { showSuccess } from "@/utils/toast";
+import { getTransactions, updateTransaction, Transaction } from "@/data/transactions";
 
 const MasterSetting: React.FC = () => {
   const [userName, setUserName] = useState<string>("");
   const [bankAccountName, setBankAccountName] = useState<string>("");
   const [bankAccountNumber, setBankAccountNumber] = useState<string>("");
   const [bankName, setBankName] = useState<string>("");
+  const [initialBalance, setInitialBalance] = useState<string>("");
+  const [initialBalancePaymentType, setInitialBalancePaymentType] = useState<"Tunai" | "Bank" | "">("");
 
   useEffect(() => {
     const savedUserName = localStorage.getItem("userName");
@@ -29,6 +33,14 @@ const MasterSetting: React.FC = () => {
     if (savedBankName) {
       setBankName(savedBankName);
     }
+
+    // Load initial saldo from transactions
+    const transactions = getTransactions();
+    const saldoEntry = transactions.find(t => t.id === 1 && t.type === "Saldo");
+    if (saldoEntry) {
+      setInitialBalance(saldoEntry.amount.toString());
+      setInitialBalancePaymentType(saldoEntry.paymentType);
+    }
   }, []);
 
   const handleSaveSettings = () => {
@@ -36,6 +48,29 @@ const MasterSetting: React.FC = () => {
     localStorage.setItem("bankAccountName", bankAccountName);
     localStorage.setItem("bankAccountNumber", bankAccountNumber);
     localStorage.setItem("bankName", bankName);
+
+    // Update the initial saldo transaction
+    const currentTransactions = getTransactions();
+    const existingSaldoIndex = currentTransactions.findIndex(t => t.id === 1 && t.type === "Saldo");
+
+    const updatedSaldo: Transaction = {
+      id: 1,
+      date: "2023-01-01", // Keep the fixed date for initial saldo
+      description: "Saldo Awal",
+      type: "Saldo",
+      amount: parseFloat(initialBalance),
+      paymentType: initialBalancePaymentType as "Tunai" | "Bank",
+    };
+
+    if (existingSaldoIndex !== -1) {
+      updateTransaction(updatedSaldo);
+    } else {
+      // This case should ideally not happen if getTransactions always ensures initialSaldo exists
+      // But as a fallback, add it if it's somehow missing
+      const newTransactions = [updatedSaldo, ...currentTransactions];
+      localStorage.setItem("cash_transactions", JSON.stringify(newTransactions));
+    }
+
     showSuccess("Pengaturan berhasil disimpan!");
   };
 
@@ -81,6 +116,31 @@ const MasterSetting: React.FC = () => {
               onChange={(e) => setBankName(e.target.value)}
               placeholder="Contoh: Bank Central Asia (BCA)"
             />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="initialBalance">Saldo Awal (Rp)</Label>
+            <Input
+              id="initialBalance"
+              type="number"
+              value={initialBalance}
+              onChange={(e) => setInitialBalance(e.target.value)}
+              placeholder="Contoh: 1000000"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="initialBalancePaymentType">Tipe Pembayaran Saldo Awal</Label>
+            <Select
+              value={initialBalancePaymentType}
+              onValueChange={(value: "Tunai" | "Bank") => setInitialBalancePaymentType(value)}
+            >
+              <SelectTrigger id="initialBalancePaymentType">
+                <SelectValue placeholder="Pilih Tipe" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Tunai">Tunai</SelectItem>
+                <SelectItem value="Bank">Bank</SelectItem>
+              </SelectContent>
+            </Select>
           </div>
           <Button onClick={handleSaveSettings} className="w-full">Simpan Pengaturan</Button>
         </CardContent>
