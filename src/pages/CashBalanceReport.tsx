@@ -1,35 +1,51 @@
-import React, { useState, useMemo } from "react";
+import React, { useState, useMemo, useEffect } from "react";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table";
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select";
 import { Label } from "@/components/ui/label";
-import { allTransactions, Transaction } from "@/data/transactions"; // Import from shared data
+import { getTransactions, Transaction } from "@/data/transactions"; // Import getTransactions
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
 import { cn } from "@/lib/utils"; // Import cn for conditional class names
 
 const CashBalanceReport: React.FC = () => {
   const [filterPaymentType, setFilterPaymentType] = useState<"All" | "Tunai" | "Bank">("All");
+  const [transactions, setTransactions] = useState<Transaction[]>([]);
+
+  useEffect(() => {
+    setTransactions(getTransactions());
+  }, []); // Load transactions on component mount
+
+  // Re-fetch transactions when a new one is added (e.g., from other pages)
+  // This is a simple way to react to localStorage changes. For a more robust solution,
+  // you might use a custom hook that listens to 'storage' events or a global state manager.
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setTransactions(getTransactions());
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
+  }, []);
 
   const filteredTransactions = useMemo(() => {
     let currentBalance = 0;
-    const filtered = allTransactions
-      .filter(t => t.type !== "Saldo") // Exclude initial saldo from filtering by payment type
-      .filter(t => filterPaymentType === "All" || t.paymentType === filterPaymentType)
-      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Ensure chronological order
-
-    // Re-calculate cumulative balance including initial saldo
-    let transactionsWithBalance: (Transaction & { balance: number })[] = [];
-    let initialBalance = allTransactions.find(t => t.type === "Saldo")?.amount || 0;
+    const initialSaldoEntry = transactions.find(t => t.type === "Saldo");
+    let initialBalance = initialSaldoEntry?.amount || 0;
     currentBalance = initialBalance;
 
+    const nonSaldoTransactions = transactions
+      .filter(t => t.type !== "Saldo")
+      .filter(t => filterPaymentType === "All" || t.paymentType === filterPaymentType)
+      .sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    let transactionsWithBalance: (Transaction & { balance: number })[] = [];
+
     // Add initial saldo as the first entry if it exists
-    const initialSaldoEntry = allTransactions.find(t => t.type === "Saldo");
     if (initialSaldoEntry) {
       transactionsWithBalance.push({ ...initialSaldoEntry, balance: initialBalance });
     }
 
-    filtered.forEach(t => {
+    nonSaldoTransactions.forEach(t => {
       if (t.type === "Penerimaan") {
         currentBalance += t.amount;
       } else if (t.type === "Pengeluaran") {
@@ -39,7 +55,7 @@ const CashBalanceReport: React.FC = () => {
     });
 
     return transactionsWithBalance;
-  }, [filterPaymentType]);
+  }, [filterPaymentType, transactions]);
 
   const totalBalance = useMemo(() => {
     if (filteredTransactions.length === 0) return 0;

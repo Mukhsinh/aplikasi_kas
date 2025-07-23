@@ -10,7 +10,7 @@ import jsPDF from "jspdf";
 import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { showSuccess, showError } from "@/utils/toast";
-import { allTransactions, Transaction } from "@/data/transactions"; // Import from shared data
+import { getTransactions, Transaction } from "@/data/transactions"; // Import getTransactions
 
 const PrintReport: React.FC = () => {
   const [reportPeriodType, setReportPeriodType] = useState<"monthly" | "semester" | "yearly">("monthly");
@@ -18,6 +18,7 @@ const PrintReport: React.FC = () => {
   const [selectedYear, setSelectedYear] = useState<string>(format(new Date(), "yyyy"));
   const [selectedSemester, setSelectedSemester] = useState<"1" | "2">("1");
   const [userName, setUserName] = useState<string>("");
+  const [allAppTransactions, setAllAppTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
     const savedUserName = localStorage.getItem("userName");
@@ -26,6 +27,16 @@ const PrintReport: React.FC = () => {
     } else {
       setUserName("Bendahara"); // Default if not set
     }
+    setAllAppTransactions(getTransactions());
+  }, []);
+
+  // Re-fetch transactions when a new one is added (e.g., from other pages)
+  useEffect(() => {
+    const handleStorageChange = () => {
+      setAllAppTransactions(getTransactions());
+    };
+    window.addEventListener('storage', handleStorageChange);
+    return () => window.removeEventListener('storage', handleStorageChange);
   }, []);
 
   const availableYears = useMemo(() => {
@@ -71,14 +82,29 @@ const PrintReport: React.FC = () => {
       reportTitle += ` Tahun ${selectedYear}`;
     }
 
-    const filtered = allTransactions.filter(t => {
+    // Filter transactions based on the selected period
+    const transactionsInPeriod = allAppTransactions.filter(t => {
       const transactionDate = new Date(t.date);
       return startDate && endDate && transactionDate >= startDate && transactionDate <= endDate;
     }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Ensure chronological order
 
     // Calculate cumulative balance
     let currentBalance = 0;
-    const transactionsWithBalance = filtered.map(t => {
+    // Find the balance *before* the start date of the report period
+    const transactionsBeforePeriod = allAppTransactions.filter(t => {
+      const transactionDate = new Date(t.date);
+      return startDate && transactionDate < startDate;
+    }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
+
+    transactionsBeforePeriod.forEach(t => {
+      if (t.type === "Penerimaan" || t.type === "Saldo") {
+        currentBalance += t.amount;
+      } else if (t.type === "Pengeluaran") {
+        currentBalance -= t.amount;
+      }
+    });
+
+    const transactionsWithBalance = transactionsInPeriod.map(t => {
       if (t.type === "Penerimaan" || t.type === "Saldo") {
         currentBalance += t.amount;
       } else if (t.type === "Pengeluaran") {
@@ -88,7 +114,7 @@ const PrintReport: React.FC = () => {
     });
 
     return { data: transactionsWithBalance, title: reportTitle };
-  }, [reportPeriodType, selectedMonth, selectedYear, selectedSemester, months]);
+  }, [reportPeriodType, selectedMonth, selectedYear, selectedSemester, months, allAppTransactions]);
 
   const handleDownloadPdf = () => {
     const { data, title } = getFilteredReportData;

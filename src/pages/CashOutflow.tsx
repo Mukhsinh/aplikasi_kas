@@ -10,6 +10,7 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { showSuccess, showError } from "@/utils/toast";
+import { addTransaction } from "@/data/transactions"; // Import addTransaction
 
 const CashOutflow: React.FC = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
@@ -31,9 +32,10 @@ const CashOutflow: React.FC = () => {
       description,
       amount: parseFloat(amount),
       paymentType,
+      type: "Pengeluaran" as "Pengeluaran", // Explicitly set type
     };
 
-    console.log("Pengeluaran Kas Baru:", newTransaction);
+    addTransaction(newTransaction); // Save to local storage
     showSuccess("Pengeluaran kas berhasil ditambahkan!");
 
     // Reset form

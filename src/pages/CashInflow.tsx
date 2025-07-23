@@ -10,13 +10,14 @@ import { format } from "date-fns";
 import { CalendarIcon } from "lucide-react";
 import { cn } from "@/lib/utils";
 import { showSuccess, showError } from "@/utils/toast";
+import { addTransaction } from "@/data/transactions"; // Import addTransaction
 
 const CashInflow: React.FC = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
   const [transactionNumber, setTransactionNumber] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
-  const [receiptType, setReceiptType] = useState<"Tunai" | "Bank" | "">(""); // Changed from paymentType to receiptType
+  const [receiptType, setReceiptType] = useState<"Tunai" | "Bank" | "">("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -30,10 +31,11 @@ const CashInflow: React.FC = () => {
       transactionNumber,
       description,
       amount: parseFloat(amount),
-      receiptType, // Changed from paymentType to receiptType
+      paymentType: receiptType, // Use paymentType as per Transaction interface
+      type: "Penerimaan" as "Penerimaan", // Explicitly set type
     };
 
-    console.log("Penerimaan Kas Baru:", newTransaction);
+    addTransaction(newTransaction); // Save to local storage
     showSuccess("Penerimaan kas berhasil ditambahkan!");
 
     // Reset form
@@ -41,7 +43,7 @@ const CashInflow: React.FC = () => {
     setTransactionNumber("");
     setDescription("");
     setAmount("");
-    setReceiptType(""); // Changed from paymentType to receiptType
+    setReceiptType("");
   };
 
   return (
@@ -110,10 +112,10 @@ const CashInflow: React.FC = () => {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="receipt-type">Tipe Penerimaan</Label> {/* Changed label */}
+              <Label htmlFor="receipt-type">Tipe Penerimaan</Label>
               <Select value={receiptType} onValueChange={(value: "Tunai" | "Bank") => setReceiptType(value)}>
-                <SelectTrigger id="receipt-type"> {/* Changed id */}
-                  <SelectValue placeholder="Pilih Tipe Penerimaan" /> {/* Changed placeholder */}
+                <SelectTrigger id="receipt-type">
+                  <SelectValue placeholder="Pilih Tipe Penerimaan" />
                 </SelectTrigger>
                 <SelectContent>
                   <SelectItem value="Tunai">Tunai</SelectItem>
