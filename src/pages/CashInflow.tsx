@@ -13,19 +13,21 @@ import { showSuccess, showError } from "@/utils/toast";
 
 const CashInflow: React.FC = () => {
   const [date, setDate] = useState<Date | undefined>(new Date());
+  const [transactionNumber, setTransactionNumber] = useState<string>("");
   const [description, setDescription] = useState<string>("");
   const [amount, setAmount] = useState<string>("");
   const [paymentType, setPaymentType] = useState<"Tunai" | "Bank" | "">("");
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    if (!date || !description || !amount || !paymentType) {
+    if (!date || !transactionNumber || !description || !amount || !paymentType) {
       showError("Semua kolom harus diisi.");
       return;
     }
 
     const newTransaction = {
       date: format(date, "yyyy-MM-dd"),
+      transactionNumber,
       description,
       amount: parseFloat(amount),
       paymentType,
@@ -36,6 +38,7 @@ const CashInflow: React.FC = () => {
 
     // Reset form
     setDate(new Date());
+    setTransactionNumber("");
     setDescription("");
     setAmount("");
     setPaymentType("");
@@ -73,6 +76,16 @@ const CashInflow: React.FC = () => {
                   />
                 </PopoverContent>
               </Popover>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="transactionNumber">Nomor Transaksi</Label>
+              <Input
+                id="transactionNumber"
+                value={transactionNumber}
+                onChange={(e) => setTransactionNumber(e.target.value)}
+                placeholder="Contoh: TRN001"
+              />
             </div>
 
             <div className="space-y-2">
