@@ -15,7 +15,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
       {/* Sidebar */}
       <aside className="w-64 bg-sidebar dark:bg-sidebar-background text-sidebar-foreground dark:text-sidebar-foreground p-4 flex flex-col shadow-lg">
         <div className="mb-8">
-          <h2 className="text-2xl font-bold text-sidebar-primary dark:text-sidebar-primary-foreground">Aplikasi Keuangan</h2>
+          <h2 className="text-2xl font-bold text-sidebar-primary dark:text-sidebar-primary-foreground">Aplikasi Bendahara IBI Cabang Kota Pekalongan</h2>
         </div>
         <nav className="flex-grow">
           <ul className="space-y-2">

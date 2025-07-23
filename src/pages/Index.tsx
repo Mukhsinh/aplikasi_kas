@@ -34,7 +34,7 @@ const Index = () => {
   return (
     <div className="container mx-auto py-8">
       <div className="text-center mb-12">
-        <h1 className="text-5xl font-extrabold mb-4 text-gray-900 dark:text-gray-100">Selamat Datang di Aplikasi Keuangan Anda</h1>
+        <h1 className="text-5xl font-extrabold mb-4 text-gray-900 dark:text-gray-100">Aplikasi Bendahara IBI Cab Kota Pekalongan</h1>
         <p className="text-xl text-gray-700 dark:text-gray-300">
           Kelola keuangan Anda dengan mudah dan efisien.
         </p>

@@ -4,13 +4,13 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Button } from "@/components/ui/button";
 import { Textarea } from "@/components/ui/textarea";
-import { toast } from "@/utils/toast";
+import { showSuccess } from "@/utils/toast";
 
 const CashDisbursements: React.FC = () => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     // Logika untuk menyimpan pengeluaran kas akan ditambahkan di sini
-    toast.success("Pengeluaran kas berhasil dicatat (simulasi)");
+    showSuccess("Pengeluaran kas berhasil dicatat (simulasi)");
   };
 
   return (
@@ -21,6 +21,10 @@ const CashDisbursements: React.FC = () => {
         </CardHeader>
         <CardContent>
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div>
+              <Label htmlFor="transactionNumber">Nomor Transaksi</Label>
+              <Input id="transactionNumber" type="text" placeholder="Masukkan nomor transaksi" />
+            </div>
             <div>
               <Label htmlFor="date">Tanggal</Label>
               <Input id="date" type="date" defaultValue={new Date().toISOString().split('T')[0]} />
