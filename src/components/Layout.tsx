@@ -13,7 +13,9 @@ interface LayoutProps {
 }
 
 const navItems = [
-  { name: "Home", path: "/" },
+  { name: "Dashboard", path: "/" },
+  { name: "Penerimaan Kas", path: "/penerimaan-kas" },
+  { name: "Pengeluaran Kas", path: "/pengeluaran-kas" },
   { name: "Laporan Saldo Kas", path: "/laporan-saldo-kas" },
   { name: "Master Setting", path: "/master-setting" },
   { name: "Cetak Laporan", path: "/cetak-laporan" },
