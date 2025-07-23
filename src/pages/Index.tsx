@@ -164,7 +164,7 @@ const Index = () => {
       <h2 className="text-2xl font-bold mb-6 text-center">Perbandingan Kas Bulanan</h2>
       <Card>
         <CardContent className="pt-6">
-          <ChartContainer config={chartConfig} className="min-h-[300px] w-full">
+          <ChartContainer config={chartConfig} className="min-h-[250px] w-full"> {/* Reduced min-h from 300px to 250px */}
             <BarChart accessibilityLayer data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis
