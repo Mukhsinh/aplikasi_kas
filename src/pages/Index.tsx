@@ -127,7 +127,8 @@ const Index = () => {
   return (
     <div className="container mx-auto py-8">
       <h1 className="text-4xl font-bold mb-2 text-center">Aplikasi Bendahara IBI Cab Kota Pekalongan</h1>
-      <p className="text-xl text-center text-muted-foreground mb-8">Selamat Datang, {userName}!</p>
+      <p className="text-xl text-center text-muted-foreground">Selamat Datang, {userName}!</p>
+      <p className="text-sm text-center text-muted-foreground mb-8">Developed by : MukhsinHadi (copyright)Keep going</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
@@ -164,7 +165,7 @@ const Index = () => {
       <h2 className="text-2xl font-bold mb-6 text-center">Perbandingan Kas Bulanan</h2>
       <Card>
         <CardContent className="pt-6">
-          <ChartContainer config={chartConfig} className="min-h-[250px] w-full"> {/* Reduced min-h from 300px to 250px */}
+          <ChartContainer config={chartConfig} className="min-h-[250px] w-full">
             <BarChart accessibilityLayer data={chartData}>
               <CartesianGrid vertical={false} />
               <XAxis

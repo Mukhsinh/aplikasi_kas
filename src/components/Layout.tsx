@@ -27,29 +27,25 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const SidebarContent = () => (
     <div className="flex flex-col h-full p-4 bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
       <h2 className="text-2xl font-bold mb-6 text-sidebar-primary-foreground">Aplikasi Kas</h2>
-      <nav className="flex flex-col space-y-2 flex-grow"> {/* Added flex-grow to push footer to bottom */}
+      <nav className="flex flex-col space-y-2 flex-grow">
         {navItems.map((item) => (
           <Button
             key={item.path}
             asChild
-            // Changed variant to 'default' and added custom classes for contrast
             className="justify-start bg-primary text-primary-foreground hover:bg-primary/90"
           >
-            <Link to={item.path} className="flex items-center gap-2"> {/* Added flex and gap for icon */}
-              <item.icon className="h-5 w-5" /> {/* Render icon */}
+            <Link to={item.path} className="flex items-center gap-2">
+              <item.icon className="h-5 w-5" />
               {item.name}
             </Link>
           </Button>
         ))}
       </nav>
-      <footer className="mt-auto text-center text-xs text-muted-foreground pt-4"> {/* Added mt-auto and pt-4 */}
-        Developed by : MukhsinHadi (copyright)Keep going
-      </footer>
     </div>
   );
 
   return (
-    <div className="flex min-h-screen"> {/* Removed bg-background as gradient is on body */}
+    <div className="flex min-h-screen">
       {isMobile ? (
         <Sheet>
           <SheetTrigger asChild>
