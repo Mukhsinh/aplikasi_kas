@@ -27,7 +27,7 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
   const SidebarContent = () => (
     <div className="flex flex-col h-full p-4 bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
       <h2 className="text-2xl font-bold mb-6 text-sidebar-primary-foreground">Aplikasi Kas</h2>
-      <nav className="flex flex-col space-y-2">
+      <nav className="flex flex-col space-y-2 flex-grow"> {/* Added flex-grow to push footer to bottom */}
         {navItems.map((item) => (
           <Button
             key={item.path}
@@ -42,6 +42,9 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
           </Button>
         ))}
       </nav>
+      <footer className="mt-auto text-center text-xs text-muted-foreground pt-4"> {/* Added mt-auto and pt-4 */}
+        Developed by : MukhsinHadi (copyright)Keep going
+      </footer>
     </div>
   );
 
@@ -67,9 +70,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
         <div className="flex-grow">
           {children}
         </div>
-        <footer className="mt-8 text-center text-sm text-muted-foreground">
-          Developed by : MukhsinHadi (copyright)Keep going
-        </footer>
       </main>
     </div>
   );
