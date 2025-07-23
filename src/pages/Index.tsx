@@ -1,4 +1,3 @@
-import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowDownCircle, ArrowUpCircle, ReceiptText, Wallet, FileText, Settings, Printer, LayoutDashboard } from "lucide-react";
@@ -79,9 +78,7 @@ const Index = () => {
         ))}
       </div>
 
-      <div className="mt-12">
-        <MadeWithDyad />
-      </div>
+      {/* The MadeWithDyad component was here and has been removed */}
     </div>
   );
 };
