@@ -6,6 +6,7 @@ import { Label } from "@/components/ui/label";
 import { allTransactions, Transaction } from "@/data/transactions"; // Import from shared data
 import { format } from "date-fns";
 import { id } from "date-fns/locale";
+import { cn } from "@/lib/utils"; // Import cn for conditional class names
 
 const CashBalanceReport: React.FC = () => {
   const [filterPaymentType, setFilterPaymentType] = useState<"All" | "Tunai" | "Bank">("All");
@@ -97,7 +98,11 @@ const CashBalanceReport: React.FC = () => {
                       <TableCell>{transaction.description}</TableCell>
                       <TableCell>{transaction.type}</TableCell>
                       <TableCell>{transaction.paymentType}</TableCell>
-                      <TableCell className="text-right">
+                      <TableCell className={cn(
+                        "text-right",
+                        transaction.type === "Penerimaan" && "text-green-600",
+                        transaction.type === "Pengeluaran" && "text-red-600"
+                      )}>
                         {transaction.type === "Pengeluaran" ? "-" : ""}Rp {transaction.amount.toLocaleString('id-ID')}
                       </TableCell>
                       <TableCell className="text-right">Rp {transaction.balance.toLocaleString('id-ID')}</TableCell>

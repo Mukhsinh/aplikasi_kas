@@ -1,11 +1,12 @@
 import { MadeWithDyad } from "@/components/made-with-dyad";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
-import { DollarSign, ArrowDownCircle, ArrowUpCircle, ReceiptText, Wallet, FileText, Settings, Printer } from "lucide-react";
+import { ArrowDownCircle, ArrowUpCircle, ReceiptText, Wallet, FileText, Settings, Printer, LayoutDashboard } from "lucide-react";
 import { Link } from "react-router-dom";
 import React, { useState, useEffect } from "react"; // Import React and hooks
 
 const navItems = [
+  { name: "Dashboard", path: "/", icon: LayoutDashboard },
   { name: "Penerimaan Kas", path: "/penerimaan-kas", icon: ReceiptText },
   { name: "Pengeluaran Kas", path: "/pengeluaran-kas", icon: Wallet },
   { name: "Laporan Saldo Kas", path: "/laporan-saldo-kas", icon: FileText },
@@ -33,7 +34,7 @@ const Index = () => {
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
             <CardTitle className="text-sm font-medium">Total Saldo Kas</CardTitle>
-            <DollarSign className="h-4 w-4 text-muted-foreground" />
+            <span className="text-muted-foreground font-bold text-lg">Rp</span> {/* Replaced DollarSign with Rp */}
           </CardHeader>
           <CardContent>
             <div className="text-2xl font-bold">Rp 1.500.000</div>
