@@ -14,12 +14,16 @@ const MasterSetting: React.FC = () => {
   const [bankName, setBankName] = useState<string>("");
   const [initialBalance, setInitialBalance] = useState<string>("");
   const [initialBalancePaymentType, setInitialBalancePaymentType] = useState<"Tunai" | "Bank" | "">("");
+  const [loginUsername, setLoginUsername] = useState<string>("");
+  const [loginPassword, setLoginPassword] = useState<string>("");
 
   useEffect(() => {
     const savedUserName = localStorage.getItem("userName");
     const savedBankAccountName = localStorage.getItem("bankAccountName");
     const savedBankAccountNumber = localStorage.getItem("bankAccountNumber");
     const savedBankName = localStorage.getItem("bankName");
+    const savedLoginUsername = localStorage.getItem("loginUsername");
+    const savedLoginPassword = localStorage.getItem("loginPassword");
 
     if (savedUserName) {
       setUserName(savedUserName);
@@ -32,6 +36,12 @@ const MasterSetting: React.FC = () => {
     }
     if (savedBankName) {
       setBankName(savedBankName);
+    }
+    if (savedLoginUsername) {
+      setLoginUsername(savedLoginUsername);
+    }
+    if (savedLoginPassword) {
+      setLoginPassword(savedLoginPassword);
     }
 
     // Load initial saldo from transactions
@@ -48,6 +58,8 @@ const MasterSetting: React.FC = () => {
     localStorage.setItem("bankAccountName", bankAccountName);
     localStorage.setItem("bankAccountNumber", bankAccountNumber);
     localStorage.setItem("bankName", bankName);
+    localStorage.setItem("loginUsername", loginUsername);
+    localStorage.setItem("loginPassword", loginPassword);
 
     // Update the initial saldo transaction
     const currentTransactions = getTransactions();
@@ -141,6 +153,25 @@ const MasterSetting: React.FC = () => {
                 <SelectItem value="Bank">Bank</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="loginUsername">Nama Pengguna Login</Label>
+            <Input
+              id="loginUsername"
+              value={loginUsername}
+              onChange={(e) => setLoginUsername(e.target.value)}
+              placeholder="Atur nama pengguna untuk login"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="loginPassword">Kata Sandi Login</Label>
+            <Input
+              id="loginPassword"
+              type="password"
+              value={loginPassword}
+              onChange={(e) => setLoginPassword(e.target.value)}
+              placeholder="Atur kata sandi untuk login"
+            />
           </div>
           <Button onClick={handleSaveSettings} className="w-full">Simpan Pengaturan</Button>
         </CardContent>
