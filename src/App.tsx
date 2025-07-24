@@ -11,9 +11,6 @@ import MasterSetting from "./pages/MasterSetting";
 import PrintReport from "./pages/PrintReport";
 import CashInflow from "./pages/CashInflow";
 import CashOutflow from "./pages/CashOutflow";
-import Login from "./pages/Login"; // Import Login component
-import { AuthProvider } from "./context/AuthContext"; // Import AuthProvider
-import ProtectedRoute from "./components/ProtectedRoute"; // Import ProtectedRoute
 
 const queryClient = new QueryClient();
 
@@ -22,63 +19,18 @@ const App = () => (
     <TooltipProvider>
       <Toaster />
       <Sonner />
-      <AuthProvider> {/* Wrap BrowserRouter with AuthProvider */}
-        <BrowserRouter>
-          <Routes>
-            <Route path="/login" element={<Login />} /> {/* Login route */}
-            <Route
-              path="/"
-              element={
-                <ProtectedRoute>
-                  <Layout><Index /></Layout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/penerimaan-kas"
-              element={
-                <ProtectedRoute>
-                  <Layout><CashInflow /></Layout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/pengeluaran-kas"
-              element={
-                <ProtectedRoute>
-                  <Layout><CashOutflow /></Layout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/laporan-saldo-kas"
-              element={
-                <ProtectedRoute>
-                  <Layout><CashBalanceReport /></Layout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/master-setting"
-              element={
-                <ProtectedRoute>
-                  <Layout><MasterSetting /></Layout>
-                </ProtectedRoute>
-              }
-            />
-            <Route
-              path="/cetak-laporan"
-              element={
-                <ProtectedRoute>
-                  <Layout><PrintReport /></Layout>
-                </ProtectedRoute>
-              }
-            />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
-        </BrowserRouter>
-      </AuthProvider>
+      <BrowserRouter>
+        <Routes>
+          <Route path="/" element={<Layout><Index /></Layout>} />
+          <Route path="/penerimaan-kas" element={<Layout><CashInflow /></Layout>} />
+          <Route path="/pengeluaran-kas" element={<Layout><CashOutflow /></Layout>} />
+          <Route path="/laporan-saldo-kas" element={<Layout><CashBalanceReport /></Layout>} />
+          <Route path="/master-setting" element={<Layout><MasterSetting /></Layout>} />
+          <Route path="/cetak-laporan" element={<Layout><PrintReport /></Layout>} />
+          {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+          <Route path="*" element={<NotFound />} />
+        </Routes>
+      </BrowserRouter>
     </TooltipProvider>
   </QueryClientProvider>
 );

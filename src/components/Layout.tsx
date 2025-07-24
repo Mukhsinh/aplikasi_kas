@@ -4,10 +4,9 @@ import React from "react";
 import { Link } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, ReceiptText, Wallet, FileText, Printer, Settings, LayoutDashboard, LogOut } from "lucide-react";
+import { Menu, ReceiptText, Wallet, FileText, Printer, Settings, LayoutDashboard } from "lucide-react";
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
-import { useAuth } from "@/context/AuthContext"; // Import useAuth
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -24,7 +23,6 @@ const navItems = [
 
 const Layout: React.FC<LayoutProps> = ({ children }) => {
   const isMobile = useIsMobile();
-  const { logout } = useAuth(); // Use logout from AuthContext
 
   const SidebarContent = () => (
     <div className="flex flex-col h-full p-4 bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
@@ -42,13 +40,6 @@ const Layout: React.FC<LayoutProps> = ({ children }) => {
             </Link>
           </Button>
         ))}
-        <Button
-          onClick={logout} // Add logout button
-          className="justify-start bg-destructive text-destructive-foreground hover:bg-destructive/90 mt-4"
-        >
-          <LogOut className="h-5 w-5 mr-2" />
-          Logout
-        </Button>
       </nav>
       <div className="mt-auto text-center text-xs text-muted-foreground pt-4">
         Developed by : MukhsinHadi (copyright)
