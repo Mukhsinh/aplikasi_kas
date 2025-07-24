@@ -8,36 +8,31 @@ import { showSuccess } from "@/utils/toast";
 import { getTransactions, updateTransaction, Transaction } from "@/data/transactions";
 
 const MasterSetting: React.FC = () => {
-  const [userName, setUserName] = useState<string>("");
+  const [userName, setUserName] = useState<string>(""); // For reports
+  const [appUsername, setAppUsername] = useState<string>(""); // For login
   const [bankAccountName, setBankAccountName] = useState<string>("");
   const [bankAccountNumber, setBankAccountNumber] = useState<string>("");
   const [bankName, setBankName] = useState<string>("");
   const [initialBalance, setInitialBalance] = useState<string>("");
   const [initialBalancePaymentType, setInitialBalancePaymentType] = useState<"Tunai" | "Bank" | "">("");
-  const [password, setPassword] = useState<string>(""); // New state for password
+  const [password, setPassword] = useState<string>(""); // For login
 
   useEffect(() => {
     const savedUserName = localStorage.getItem("userName");
+    const savedAppUsername = localStorage.getItem("appUsername"); // Load app username
     const savedBankAccountName = localStorage.getItem("bankAccountName");
     const savedBankAccountNumber = localStorage.getItem("bankAccountNumber");
     const savedBankName = localStorage.getItem("bankName");
-    const savedPassword = localStorage.getItem("appPassword"); // Load saved password
+    const savedPassword = localStorage.getItem("appPassword");
 
-    if (savedUserName) {
-      setUserName(savedUserName);
-    }
-    if (savedBankAccountName) {
-      setBankAccountName(savedBankAccountName);
-    }
-    if (savedBankAccountNumber) {
-      setBankAccountNumber(savedBankAccountNumber);
-    }
-    if (savedBankName) {
-      setBankName(savedBankName);
-    }
-    if (savedPassword) {
-      setPassword(savedPassword); // Set password from localStorage
-    }
+    setUserName(savedUserName || "");
+    setBankAccountName(savedBankAccountName || "");
+    setBankAccountNumber(savedBankAccountNumber || "");
+    setBankName(savedBankName || "");
+
+    // Set default login credentials if not found
+    setAppUsername(savedAppUsername || "admin");
+    setPassword(savedPassword || "1234");
 
     // Load initial saldo from transactions
     const transactions = getTransactions();
@@ -50,10 +45,11 @@ const MasterSetting: React.FC = () => {
 
   const handleSaveSettings = () => {
     localStorage.setItem("userName", userName);
+    localStorage.setItem("appUsername", appUsername); // Save app username
     localStorage.setItem("bankAccountName", bankAccountName);
     localStorage.setItem("bankAccountNumber", bankAccountNumber);
     localStorage.setItem("bankName", bankName);
-    localStorage.setItem("appPassword", password); // Save the password
+    localStorage.setItem("appPassword", password);
 
     // Update the initial saldo transaction
     const currentTransactions = getTransactions();
@@ -71,8 +67,6 @@ const MasterSetting: React.FC = () => {
     if (existingSaldoIndex !== -1) {
       updateTransaction(updatedSaldo);
     } else {
-      // This case should ideally not happen if getTransactions always ensures initialSaldo exists
-      // But as a fallback, add it if it's somehow missing
       const newTransactions = [updatedSaldo, ...currentTransactions];
       localStorage.setItem("cash_transactions", JSON.stringify(newTransactions));
     }
@@ -97,10 +91,19 @@ const MasterSetting: React.FC = () => {
             />
           </div>
           <div className="space-y-2">
+            <Label htmlFor="appUsername">Username Aplikasi (untuk login)</Label>
+            <Input
+              id="appUsername"
+              value={appUsername}
+              onChange={(e) => setAppUsername(e.target.value)}
+              placeholder="Masukkan username aplikasi"
+            />
+          </div>
+          <div className="space-y-2">
             <Label htmlFor="password">Password Aplikasi</Label>
             <Input
               id="password"
-              type="password" // Set type to password
+              type="password"
               value={password}
               onChange={(e) => setPassword(e.target.value)}
               placeholder="Masukkan password"
