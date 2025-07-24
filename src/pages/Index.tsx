@@ -10,6 +10,8 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
+import { Button } from "@/components/ui/button"; // Import Button component
+import { LogOut } from "lucide-react"; // Import LogOut icon
 
 const chartConfig = {
   inflow: {
@@ -22,7 +24,11 @@ const chartConfig = {
   },
 } as const;
 
-const Index = () => {
+interface IndexProps {
+  onLogout?: () => void; // Make onLogout optional as it might not always be passed
+}
+
+const Index: React.FC<IndexProps> = ({ onLogout }) => {
   const [userName, setUserName] = useState<string>("");
   const [allAppTransactions, setAllAppTransactions] = useState<Transaction[]>([]);
 
@@ -126,8 +132,16 @@ const Index = () => {
 
   return (
     <div className="container mx-auto py-8">
-      <h1 className="text-4xl font-bold mb-2 text-center">Aplikasi Bendahara IBI Cab Kota Pekalongan</h1>
-      <p className="text-xl text-center text-muted-foreground mb-8">Selamat Datang, {userName}!</p>
+      <div className="flex justify-between items-center mb-2">
+        <h1 className="text-4xl font-bold">Aplikasi Bendahara IBI Cab Kota Pekalongan</h1>
+        {onLogout && (
+          <Button variant="outline" onClick={onLogout} className="flex items-center gap-2">
+            <LogOut className="h-4 w-4" />
+            Logout
+          </Button>
+        )}
+      </div>
+      <p className="text-xl text-muted-foreground mb-8">Selamat Datang, {userName}!</p>
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-12">
         <Card>
           <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">

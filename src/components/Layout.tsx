@@ -84,7 +84,10 @@ const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
       )}
       <main className={cn("flex-1 p-8 flex flex-col", isMobile ? "mt-16" : "")}>
         <div className="flex-grow">
-          {children}
+          {/* Clone children to pass onLogout prop */}
+          {React.isValidElement(children)
+            ? React.cloneElement(children as React.ReactElement<any>, { onLogout })
+            : children}
         </div>
       </main>
     </div>
