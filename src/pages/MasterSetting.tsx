@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Card, CardContent, CardHeader, CardTitle } => "@/components/ui/card";
 import { Label } from "@/components/ui/label";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
@@ -14,12 +14,14 @@ const MasterSetting: React.FC = () => {
   const [bankName, setBankName] = useState<string>("");
   const [initialBalance, setInitialBalance] = useState<string>("");
   const [initialBalancePaymentType, setInitialBalancePaymentType] = useState<"Tunai" | "Bank" | "">("");
+  const [password, setPassword] = useState<string>(""); // New state for password
 
   useEffect(() => {
     const savedUserName = localStorage.getItem("userName");
     const savedBankAccountName = localStorage.getItem("bankAccountName");
     const savedBankAccountNumber = localStorage.getItem("bankAccountNumber");
     const savedBankName = localStorage.getItem("bankName");
+    const savedPassword = localStorage.getItem("appPassword"); // Load saved password
 
     if (savedUserName) {
       setUserName(savedUserName);
@@ -32,6 +34,9 @@ const MasterSetting: React.FC = () => {
     }
     if (savedBankName) {
       setBankName(savedBankName);
+    }
+    if (savedPassword) {
+      setPassword(savedPassword); // Set password from localStorage
     }
 
     // Load initial saldo from transactions
@@ -48,6 +53,7 @@ const MasterSetting: React.FC = () => {
     localStorage.setItem("bankAccountName", bankAccountName);
     localStorage.setItem("bankAccountNumber", bankAccountNumber);
     localStorage.setItem("bankName", bankName);
+    localStorage.setItem("appPassword", password); // Save the password
 
     // Update the initial saldo transaction
     const currentTransactions = getTransactions();
@@ -88,6 +94,16 @@ const MasterSetting: React.FC = () => {
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="Masukkan nama Anda"
+            />
+          </div>
+          <div className="space-y-2">
+            <Label htmlFor="password">Password Aplikasi</Label>
+            <Input
+              id="password"
+              type="password" // Set type to password
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              placeholder="Masukkan password"
             />
           </div>
           <div className="space-y-2">
