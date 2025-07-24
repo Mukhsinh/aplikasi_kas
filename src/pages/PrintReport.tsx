@@ -6,8 +6,6 @@ import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@
 import { Input } from "@/components/ui/input";
 import { format, getMonth, getYear, startOfMonth, endOfMonth, startOfYear, endOfYear, addMonths } from "date-fns";
 import { id } from "date-fns/locale"; // Import locale for Indonesian month names
-import { jsPDF } from "jspdf"; // Changed from default import to named import
-import "jspdf-autotable";
 import * as XLSX from "xlsx";
 import { showSuccess, showError } from "@/utils/toast";
 import { getTransactions, Transaction } from "@/data/transactions"; // Import getTransactions
@@ -115,57 +113,6 @@ const PrintReport: React.FC = () => {
 
     return { data: transactionsWithBalance, title: reportTitle };
   }, [reportPeriodType, selectedMonth, selectedYear, selectedSemester, months, allAppTransactions]);
-
-  const handleDownloadPdf = () => {
-    const { data, title } = getFilteredReportData;
-
-    if (data.length === 0) {
-      showError("Tidak ada data untuk periode yang dipilih.");
-      return;
-    }
-
-    const doc = new jsPDF();
-
-    doc.setFontSize(18);
-    doc.text(title, 14, 22);
-
-    doc.setFontSize(11);
-    doc.text(`Tanggal Cetak: ${format(new Date(), "dd MMMM yyyy", { locale: id })}`, 14, 30);
-
-    const tableColumn = ["Tanggal", "Deskripsi", "Jenis", "Tipe Pembayaran", "Jumlah (Rp)", "Saldo (Rp)"];
-    const tableRows = data.map(t => [
-      t.date,
-      t.description,
-      t.type,
-      t.paymentType,
-      `${t.type === "Pengeluaran" ? "-" : ""}Rp ${t.amount.toLocaleString('id-ID')}`,
-      `Rp ${t.balance.toLocaleString('id-ID')}`,
-    ]);
-
-    (doc as any).autoTable({
-      head: [tableColumn],
-      body: tableRows,
-      startY: 40,
-      theme: 'grid',
-      styles: { fontSize: 8, cellPadding: 2, overflow: 'linebreak' },
-      headStyles: { fillColor: [22, 160, 133], textColor: 255, fontStyle: 'bold' },
-      columnStyles: {
-        4: { halign: 'right' },
-        5: { halign: 'right' },
-      },
-    });
-
-    const finalY = (doc as any).autoTable.previous.finalY;
-    doc.setFontSize(10);
-    doc.text(`Pekalongan, ${format(new Date(), "dd MMMM yyyy", { locale: id })}`, 14, finalY + 20);
-    doc.text("Mengetahui,", 14, finalY + 30);
-    doc.text("Bendahara", 14, finalY + 35);
-    doc.text("____________________", 14, finalY + 60);
-    doc.text(`( ${userName} )`, 14, finalY + 65);
-
-    doc.save(`${title.replace(/ /g, '_')}.pdf`);
-    showSuccess("Laporan PDF berhasil diunduh!");
-  };
 
   const handleDownloadExcel = () => {
     const { data, title } = getFilteredReportData;
@@ -306,9 +253,8 @@ const PrintReport: React.FC = () => {
             </div>
           )}
 
-          <div className="flex space-x-4 mt-6">
-            <Button onClick={handleDownloadPdf} className="flex-1">Unduh PDF</Button>
-            <Button onClick={handleDownloadExcel} className="flex-1" variant="outline">Unduh Excel</Button>
+          <div className="flex justify-center mt-6">
+            <Button onClick={handleDownloadExcel} className="flex-1 max-w-xs">Unduh Excel</Button>
           </div>
         </CardContent>
       </Card>
