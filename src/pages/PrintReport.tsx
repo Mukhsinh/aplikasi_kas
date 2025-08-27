@@ -17,6 +17,7 @@ const PrintReport: React.FC = () => {
   const [selectedSemester, setSelectedSemester] = useState<"1" | "2">("1");
   const [userName, setUserName] = useState<string>("");
   const [allAppTransactions, setAllAppTransactions] = useState<Transaction[]>([]);
+  const [filterPaymentType, setFilterPaymentType] = useState<"Gabungan" | "Tunai" | "Bank">("Gabungan"); // New state for payment type filter
 
   useEffect(() => {
     const savedUserName = localStorage.getItem("userName");
@@ -80,18 +81,22 @@ const PrintReport: React.FC = () => {
       reportTitle += ` Tahun ${selectedYear}`;
     }
 
-    // Filter transactions based on the selected period
+    // Filter transactions based on the selected period AND payment type
     const transactionsInPeriod = allAppTransactions.filter(t => {
       const transactionDate = new Date(t.date);
-      return startDate && endDate && transactionDate >= startDate && transactionDate <= endDate;
+      const isWithinPeriod = startDate && endDate && transactionDate >= startDate && transactionDate <= endDate;
+      const matchesPaymentType = filterPaymentType === "Gabungan" || t.paymentType === filterPaymentType;
+      return isWithinPeriod && matchesPaymentType;
     }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime()); // Ensure chronological order
 
     // Calculate cumulative balance
     let currentBalance = 0;
-    // Find the balance *before* the start date of the report period
+    // Find the balance *before* the start date of the report period, also respecting payment type filter
     const transactionsBeforePeriod = allAppTransactions.filter(t => {
       const transactionDate = new Date(t.date);
-      return startDate && transactionDate < startDate;
+      const isBeforePeriod = startDate && transactionDate < startDate;
+      const matchesPaymentType = filterPaymentType === "Gabungan" || t.paymentType === filterPaymentType;
+      return isBeforePeriod && matchesPaymentType;
     }).sort((a, b) => new Date(a.date).getTime() - new Date(b.date).getTime());
 
     transactionsBeforePeriod.forEach(t => {
@@ -112,13 +117,13 @@ const PrintReport: React.FC = () => {
     });
 
     return { data: transactionsWithBalance, title: reportTitle };
-  }, [reportPeriodType, selectedMonth, selectedYear, selectedSemester, months, allAppTransactions]);
+  }, [reportPeriodType, selectedMonth, selectedYear, selectedSemester, months, allAppTransactions, filterPaymentType]);
 
   const handleDownloadExcel = () => {
     const { data, title } = getFilteredReportData;
 
     if (data.length === 0) {
-      showError("Tidak ada data untuk periode yang dipilih.");
+      showError("Tidak ada data untuk periode dan filter yang dipilih.");
       return;
     }
 
@@ -252,6 +257,24 @@ const PrintReport: React.FC = () => {
               </Select>
             </div>
           )}
+
+          {/* New filter for Payment Type */}
+          <div className="space-y-2">
+            <Label htmlFor="filter-payment-type">Jenis</Label>
+            <Select
+              value={filterPaymentType}
+              onValueChange={(value: "Gabungan" | "Tunai" | "Bank") => setFilterPaymentType(value)}
+            >
+              <SelectTrigger id="filter-payment-type">
+                <SelectValue placeholder="Pilih Jenis Pembayaran" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Gabungan">Gabungan</SelectItem>
+                <SelectItem value="Tunai">Tunai</SelectItem>
+                <SelectItem value="Bank">Bank</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
 
           <div className="flex justify-center mt-6">
             <Button onClick={handleDownloadExcel} className="flex-1 max-w-xs">Unduh Excel</Button>
