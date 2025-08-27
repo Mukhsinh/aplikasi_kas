@@ -4,7 +4,7 @@ import React from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, ReceiptText, Wallet, FileText, Printer, Settings, LayoutDashboard, LogOut } from "lucide-react";
+import { Menu, ReceiptText, Wallet, FileText, Printer, Settings, LayoutDashboard, LogOut, UploadCloud } from "lucide-react"; // Import UploadCloud icon
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
 
@@ -18,8 +18,9 @@ const navItems = [
   { name: "Penerimaan Kas", path: "/penerimaan-kas", icon: ReceiptText },
   { name: "Pengeluaran Kas", path: "/pengeluaran-kas", icon: Wallet },
   { name: "Laporan Saldo Kas", path: "/laporan-saldo-kas", icon: FileText },
-  { name: "Master Setting", path: "/master-setting", icon: Settings },
   { name: "Cetak Laporan", path: "/cetak-laporan", icon: Printer },
+  { name: "Impor Data", path: "/import-data", icon: UploadCloud }, // New menu item
+  { name: "Master Setting", path: "/master-setting", icon: Settings },
 ];
 
 const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
