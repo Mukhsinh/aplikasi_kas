@@ -10,8 +10,11 @@ import {
   ChartTooltipContent,
 } from "@/components/ui/chart";
 import { Bar, BarChart, CartesianGrid, XAxis, YAxis, Tooltip, Legend } from "recharts";
-import { Button } from "@/components/ui/button"; // Import Button component
-import { LogOut } from "lucide-react"; // Import LogOut icon
+import { Button } from "@/components/ui/button";
+import { LogOut } from "lucide-react";
+import { useSession } from "@/components/SessionContextProvider"; // Import useSession
+import { supabase } from "@/integrations/supabase/client"; // Import supabase client
+import { showError } from "@/utils/toast"; // Import showError
 
 const chartConfig = {
   inflow: {
@@ -25,21 +28,36 @@ const chartConfig = {
 } as const;
 
 interface IndexProps {
-  onLogout?: () => void; // Make onLogout optional as it might not always be passed
+  onLogout?: () => void;
 }
 
 const Index: React.FC<IndexProps> = ({ onLogout }) => {
+  const { user } = useSession(); // Get current user from session
   const [userName, setUserName] = useState<string>("");
   const [allAppTransactions, setAllAppTransactions] = useState<Transaction[]>([]);
 
   useEffect(() => {
-    const savedUserName = localStorage.getItem("userName");
-    if (savedUserName) {
-      setUserName(savedUserName);
-    } else {
-      setUserName("Pengguna");
-    }
+    const loadUserData = async () => {
+      if (user) {
+        const { data: profile, error } = await supabase
+          .from('profiles')
+          .select('first_name, last_name')
+          .eq('id', user.id)
+          .single();
 
+        if (error) {
+          console.error("Error fetching profile:", error.message);
+          showError("Gagal memuat data pengguna.");
+          setUserName("Pengguna");
+        } else if (profile) {
+          setUserName(`${profile.first_name || ''} ${profile.last_name || ''}`.trim() || "Pengguna");
+        }
+      } else {
+        setUserName("Pengguna");
+      }
+    };
+
+    loadUserData();
     setAllAppTransactions(getTransactions());
 
     const handleStorageChange = () => {
@@ -47,7 +65,7 @@ const Index: React.FC<IndexProps> = ({ onLogout }) => {
     };
     window.addEventListener('storage', handleStorageChange);
     return () => window.removeEventListener('storage', handleStorageChange);
-  }, []);
+  }, [user]);
 
   const { totalBalance, currentMonthInflow, currentMonthOutflow, lastTransactionDate, chartData } = useMemo(() => {
     let currentBalance = 0;
