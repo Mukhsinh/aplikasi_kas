@@ -15,7 +15,7 @@ const Login: React.FC = () => {
         <CardContent>
           <Auth
             supabaseClient={supabase}
-            providers={[]} // No third-party providers for now
+            providers={[]} // Tidak ada penyedia pihak ketiga untuk saat ini
             appearance={{
               theme: ThemeSupa,
               variables: {
@@ -28,8 +28,47 @@ const Login: React.FC = () => {
               },
             }}
             theme="light"
-            redirectTo={window.location.origin} // Redirect to home after login
+            redirectTo={window.location.origin} // Arahkan ke beranda setelah login
+            view="sign_in" // Tampilan default, termasuk tautan ke pendaftaran
+            showLinks={true} // Pastikan tautan seperti "Daftar" dan "Lupa kata sandi" terlihat
+            localization={{
+              variables: {
+                sign_in: {
+                  email_label: 'Email Anda',
+                  password_label: 'Kata Sandi Anda',
+                  email_input_placeholder: 'nama@contoh.com',
+                  password_input_placeholder: '••••••••',
+                  button_label: 'Masuk',
+                  social_provider_text: 'Atau masuk dengan',
+                  link_text: 'Belum punya akun? Daftar',
+                  forgotten_password: 'Lupa kata sandi?',
+                },
+                sign_up: {
+                  email_label: 'Email Anda',
+                  password_label: 'Buat Kata Sandi',
+                  email_input_placeholder: 'nama@contoh.com',
+                  password_input_placeholder: '••••••••',
+                  button_label: 'Daftar',
+                  social_provider_text: 'Atau daftar dengan',
+                  link_text: 'Sudah punya akun? Masuk',
+                },
+                forgotten_password: {
+                  email_label: 'Email Anda',
+                  password_reset_button_label: 'Kirim instruksi reset',
+                  email_input_placeholder: 'nama@contoh.com',
+                  link_text: 'Sudah ingat kata sandi? Masuk',
+                },
+                update_password: {
+                  password_label: 'Kata Sandi Baru',
+                  password_input_placeholder: 'Kata Sandi Baru Anda',
+                  button_label: 'Perbarui Kata Sandi',
+                },
+              },
+            }}
           />
+          <p className="text-center text-sm text-muted-foreground mt-4">
+            Jika Anda mendaftar akun baru, silakan periksa email Anda untuk konfirmasi setelah pendaftaran.
+          </p>
         </CardContent>
       </Card>
     </div>
