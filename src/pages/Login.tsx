@@ -15,7 +15,7 @@ const Login: React.FC = () => {
         <CardContent>
           <Auth
             supabaseClient={supabase}
-            providers={[]} // Tidak ada penyedia pihak ketiga untuk saat ini
+            providers={['google', 'github']} // Menambahkan Google dan GitHub sebagai penyedia
             appearance={{
               theme: ThemeSupa,
               variables: {
