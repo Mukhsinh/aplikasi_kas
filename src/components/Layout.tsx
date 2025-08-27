@@ -1,12 +1,14 @@
 "use client";
 
-import React from "react";
+import React, { useState, useEffect } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { Sheet, SheetContent, SheetTrigger } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
-import { Menu, ReceiptText, Wallet, FileText, Printer, Settings, LayoutDashboard, LogOut, UploadCloud } from "lucide-react"; // Import UploadCloud icon
+import { Menu, ReceiptText, Wallet, FileText, Printer, Settings, LayoutDashboard, LogOut, UploadCloud, Users } from "lucide-react"; // Import Users icon
 import { useIsMobile } from "@/hooks/use-mobile";
 import { cn } from "@/lib/utils";
+import { useSession } from "@/components/SessionContextProvider"; // Import useSession
+import { supabase } from "@/integrations/supabase/client"; // Import supabase client
 
 interface LayoutProps {
   children: React.ReactNode;
@@ -14,18 +16,44 @@ interface LayoutProps {
 }
 
 const navItems = [
-  { name: "Dashboard", path: "/", icon: LayoutDashboard },
-  { name: "Penerimaan Kas", path: "/penerimaan-kas", icon: ReceiptText },
-  { name: "Pengeluaran Kas", path: "/pengeluaran-kas", icon: Wallet },
-  { name: "Laporan Saldo Kas", path: "/laporan-saldo-kas", icon: FileText },
-  { name: "Cetak Laporan", path: "/cetak-laporan", icon: Printer },
-  { name: "Impor Data", path: "/import-data", icon: UploadCloud }, // New menu item
-  { name: "Master Setting", path: "/master-setting", icon: Settings },
+  { name: "Dashboard", path: "/", icon: LayoutDashboard, roles: ["user", "admin"] },
+  { name: "Penerimaan Kas", path: "/penerimaan-kas", icon: ReceiptText, roles: ["user", "admin"] },
+  { name: "Pengeluaran Kas", path: "/pengeluaran-kas", icon: Wallet, roles: ["user", "admin"] },
+  { name: "Laporan Saldo Kas", path: "/laporan-saldo-kas", icon: FileText, roles: ["user", "admin"] },
+  { name: "Cetak Laporan", path: "/cetak-laporan", icon: Printer, roles: ["user", "admin"] },
+  { name: "Impor Data", path: "/import-data", icon: UploadCloud, roles: ["user", "admin"] },
+  { name: "Master Setting", path: "/master-setting", icon: Settings, roles: ["user", "admin"] },
+  { name: "Manajemen Peran Admin", path: "/admin/role-management", icon: Users, roles: ["admin"] }, // New admin-only menu item
 ];
 
 const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
   const isMobile = useIsMobile();
   const navigate = useNavigate();
+  const { user, isLoading: isSessionLoading } = useSession();
+  const [currentUserRole, setCurrentUserRole] = useState<string | null>(null);
+
+  useEffect(() => {
+    const fetchUserRole = async () => {
+      if (user) {
+        const { data, error } = await supabase
+          .from('profiles')
+          .select('role')
+          .eq('id', user.id)
+          .single();
+        if (error) {
+          console.error("Error fetching user role for layout:", error.message);
+          setCurrentUserRole(null);
+        } else if (data) {
+          setCurrentUserRole(data.role);
+        }
+      } else {
+        setCurrentUserRole(null);
+      }
+    };
+    if (!isSessionLoading) {
+      fetchUserRole();
+    }
+  }, [user, isSessionLoading]);
 
   const handleLogoutClick = () => {
     onLogout();
@@ -36,18 +64,24 @@ const Layout: React.FC<LayoutProps> = ({ children, onLogout }) => {
     <div className="flex flex-col h-full p-4 bg-sidebar text-sidebar-foreground border-r border-sidebar-border">
       <h2 className="text-2xl font-bold mb-6 text-sidebar-primary-foreground">Aplikasi Kas</h2>
       <nav className="flex flex-col space-y-2 flex-grow">
-        {navItems.map((item) => (
-          <Button
-            key={item.path}
-            asChild
-            className="justify-start bg-primary text-primary-foreground hover:bg-primary/90"
-          >
-            <Link to={item.path} className="flex items-center gap-2">
-              <item.icon className="h-5 w-5" />
-              {item.name}
-            </Link>
-          </Button>
-        ))}
+        {navItems.map((item) => {
+          // Only render if the user's role is included in the item's allowed roles
+          if (currentUserRole && item.roles.includes(currentUserRole)) {
+            return (
+              <Button
+                key={item.path}
+                asChild
+                className="justify-start bg-primary text-primary-foreground hover:bg-primary/90"
+              >
+                <Link to={item.path} className="flex items-center gap-2">
+                  <item.icon className="h-5 w-5" />
+                  {item.name}
+                </Link>
+              </Button>
+            );
+          }
+          return null;
+        })}
       </nav>
       <div className="mt-auto pt-4">
         <Button

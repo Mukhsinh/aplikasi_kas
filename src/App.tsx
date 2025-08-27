@@ -16,7 +16,8 @@ import Login from "./pages/Login";
 import { SessionContextProvider, useSession } from "./components/SessionContextProvider";
 import { supabase } from "./integrations/supabase/client";
 import { showError } from "./utils/toast";
-import ImportData from "./pages/ImportData"; // Import the new ImportData component
+import ImportData from "./pages/ImportData";
+import AdminRoleManagement from "./pages/AdminRoleManagement"; // Import the new AdminRoleManagement component
 
 const queryClient = new QueryClient();
 
@@ -113,6 +114,16 @@ const AppContent = () => {
           <ProtectedRoute>
             <Layout onLogout={handleLogout}>
               <ImportData />
+            </Layout>
+          </ProtectedRoute>
+        }
+      />
+      <Route
+        path="/admin/role-management"
+        element={
+          <ProtectedRoute>
+            <Layout onLogout={handleLogout}>
+              <AdminRoleManagement />
             </Layout>
           </ProtectedRoute>
         }
